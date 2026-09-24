@@ -1,0 +1,47 @@
+{
+    "Pedra,Pedra": {
+        "Pedra": 4,
+        "Papel": 1,
+        "Tesoura": 1
+    },
+    "Pedra,Papel": {
+        "Pedra": 0,
+        "Papel": 1,
+        "Tesoura": 0
+    },
+    "Pedra,Tesoura": {
+        "Pedra": 0,
+        "Papel": 0,
+        "Tesoura": 1
+    },
+    "Papel,Pedra": {
+        "Pedra": 1,
+        "Papel": 0,
+        "Tesoura": 0
+    },
+    "Papel,Papel": {
+        "Pedra": 1,
+        "Papel": 1,
+        "Tesoura": 0
+    },
+    "Papel,Tesoura": {
+        "Pedra": 0,
+        "Papel": 0,
+        "Tesoura": 0
+    },
+    "Tesoura,Pedra": {
+        "Pedra": 0,
+        "Papel": 0,
+        "Tesoura": 0
+    },
+    "Tesoura,Papel": {
+        "Pedra": 0,
+        "Papel": 1,
+        "Tesoura": 0
+    },
+    "Tesoura,Tesoura": {
+        "Pedra": 0,
+        "Papel": 1,
+        "Tesoura": 4
+    }
+}
