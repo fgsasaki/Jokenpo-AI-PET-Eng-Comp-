@@ -1,47 +1,37 @@
 {
-    "Pedra,Pedra": {
-        "Pedra": 4,
-        "Papel": 2,
-        "Tesoura": 4
-    },
-    "Pedra,Papel": {
-        "Pedra": 1,
-        "Papel": 3,
-        "Tesoura": 2
-    },
-    "Pedra,Tesoura": {
-        "Pedra": 4,
-        "Papel": 0,
-        "Tesoura": 3
-    },
-    "Papel,Pedra": {
-        "Pedra": 3,
-        "Papel": 2,
-        "Tesoura": 1
-    },
-    "Papel,Papel": {
-        "Pedra": 5,
-        "Papel": 5,
-        "Tesoura": 0
-    },
     "Papel,Tesoura": {
-        "Pedra": 0,
+        "Pedra": 1,
         "Papel": 0,
-        "Tesoura": 2
+        "Tesoura": 0
     },
     "Tesoura,Pedra": {
         "Pedra": 2,
-        "Papel": 2,
-        "Tesoura": 2
+        "Papel": 0,
+        "Tesoura": 1
     },
-    "Tesoura,Papel": {
-        "Pedra": 0,
+    "Pedra,Tesoura": {
+        "Pedra": 2,
         "Papel": 1,
         "Tesoura": 0
     },
-    "Tesoura,Tesoura": {
+    "Tesoura,Papel": {
+        "Pedra": 1,
+        "Papel": 0,
+        "Tesoura": 0
+    },
+    "Pedra,Pedra": {
         "Pedra": 2,
-        "Papel": 1,
-        "Tesoura": 5
+        "Papel": 2,
+        "Tesoura": 2
+    },
+    "Pedra,Papel": {
+        "Pedra": 1,
+        "Papel": 0,
+        "Tesoura": 0
+    },
+    "Papel,Pedra": {
+        "Pedra": 1,
+        "Papel": 0,
+        "Tesoura": 0
     }
 }
