@@ -6,8 +6,10 @@ O **Jokenpô Vision** é um sistema interativo de Pedra, Papel e Tesoura que uti
 
 ---
 
-## 👨‍💻 Desenvolvedor
-* **Nome:** Leonardo Alves Moreira
+## 👨‍💻 Desenvolvedores
+* Leonardo Alves Moreira
+* Felipe Gabriel Sampaio Sasaki
+* João Pedro Queiroz de Abreu 
 
 
 ---
