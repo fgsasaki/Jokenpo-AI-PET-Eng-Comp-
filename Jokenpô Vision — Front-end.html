@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Jokenpo Vision</title>
+<style>
+
+
+:root{
+  --bg:#580f3a; --bg2:#1c0a16; --card:#1f0e18; --pink:#ff5fa2; --pink-dim:#d4407f;
+  --pink-glow:#ff8fc0; --txt:#f7e6f0; --txt-mute:#c79ab3; --line:#3a1a2c;
+}
+*{box-sizing:border-box}
+
+
+body{
+  margin:0; background:radial-gradient(circle at 50% -10%,#2a0f20,var(--bg) 60%);
+  color:var(--txt); font-family:-apple-system,Segoe UI,Roboto,sans-serif;
+  min-height:100vh; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+
+.wrap{max-width:900px;margin:0 auto;padding:28px 18px 60px}
+h1{
+  text-align:center;font-size:clamp(26px,5vw,40px);margin:0 0 4px;letter-spacing:.5px;
+  background:linear-gradient(90deg,var(--pink-glow),var(--pink));-webkit-background-clip:text;background-clip:text;color:transparent;
+}
+
+.sub{text-align:center;color:var(--txt-mute);margin:0 0 32px;font-size:14px}
+.hidden{display:none !important}
+.grid{display:grid;gap:16px;grid-template-columns:1fr}
+@media(min-width:560px){.grid.g2{grid-template-columns:1fr 1fr}.grid.g4{grid-template-columns:1fr 1fr}}
+.card{
+  background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;
+  cursor:pointer;transition:.15s;text-align:left;color:var(--txt);
+}
+.card:hover{border-color:var(--pink-dim);box-shadow:0 0 0 1px var(--pink-dim) inset,0 0 24px -8px var(--pink)}
+.card .ic{font-size:28px;margin-bottom:8px;display:block}
+.card b{display:block;font-size:16px;margin-bottom:4px}
+.card span.d{color:var(--txt-mute);font-size:13px}
+.btn{
+  background:var(--pink);color:#2a0716;border:none;border-radius:10px;padding:11px 18px;
+  font-weight:700;font-size:14px;cursor:pointer;transition:.15s;
+}
+.btn:hover{background:var(--pink-glow)}
+.btn.ghost{background:transparent;border:1px solid var(--line);color:var(--txt)}
+.btn.ghost:hover{border-color:var(--pink-dim)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+label.f{display:block;font-size:12px;color:var(--txt-mute);margin:10px 0 4px}
+input,select{
+  width:100%;background:#150910;border:1px solid var(--line);color:var(--txt);
+  border-radius:8px;padding:10px;font-size:14px;
+}
+.stream-box{
+  background:#000;border-radius:14px;overflow:hidden;position:relative;border:1px solid var(--line);
+  aspect-ratio:4/3;display:flex;align-items:center;justify-content:center;
+}
+.stream-box video,.stream-box img{width:100%;height:100%;object-fit:cover;display:block}
+.stream-box canvas{position:absolute;inset:0;width:100%;height:100%}
+.tag{
+  position:absolute;top:8px;left:8px;background:rgba(0,0,0,.6);border:1px solid var(--pink-dim);
+  padding:4px 10px;border-radius:8px;font-size:13px;font-weight:700;color:var(--pink-glow);
+}
+.placeholder{color:var(--txt-mute);font-size:13px;text-align:center;padding:12px}
+.scoreboard{display:flex;justify-content:center;gap:24px;margin:18px 0;text-align:center}
+.scoreboard div b{display:block;font-size:22px;color:var(--pink-glow)}
+.scoreboard div span{font-size:12px;color:var(--txt-mute)}
+.result{
+  text-align:center;font-size:20px;font-weight:700;margin:14px 0;min-height:28px;color:var(--pink-glow);
+}
+.manual{display:flex;justify-content:center;gap:10px;margin-top:6px}
+.manual button{font-size:24px;width:56px;height:56px;border-radius:50%}
+.streams{display:grid;gap:14px}
+.streams.two{grid-template-columns:1fr 1fr}
+@media(max-width:600px){.streams.two{grid-template-columns:1fr}}
+.err{color:#ff9f9f;font-size:13px;margin-top:8px}
+.note{font-size:12px;color:var(--txt-mute);margin-top:10px;line-height:1.5}
+.steps{color:var(--txt-mute);font-size:13px;text-align:center;margin-bottom:18px}
+.steps b{color:var(--pink-glow)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>✌️ Jokenpô Vision</h1>
+  <p class="sub">Pedra, Papel ou Tesoura por reconhecimento de gestos</p>
+
+  <div id="scr-mode">
+    <p class="steps"><b>Passo 1 de 2</b> — escolha o modo de jogo</p>
+    <div class="grid g2">
+      <div class="card" onclick="chooseMode('ia')">
+        <span class="ic">🤖</span><b>Jogador vs IA Preditiva</b>
+        <span class="d">A IA aprende seu padrão de jogadas e tenta te vencer.</span>
+      </div>
+      <div class="card" onclick="chooseMode('pvp')">
+        <span class="ic">🧑‍🤝‍🧑</span><b>Jogador vs Jogador (PvP)</b>
+        <span class="d">Duas pessoas jogam entre si, na mesma câmera ou em duas.</span>
+      </div>
+    </div>
+  </div>
+
+  <div id="scr-cam" class="hidden">
+    <p class="steps"><b>Passo 2 de 2</b> — escolha a fonte de vídeo</p>
+    <div class="grid g4" id="cam-options"></div>
+    <div class="row" style="margin-top:18px;justify-content:center">
+      <button class="btn ghost" onclick="backToMode()">← Voltar</button>
+    </div>
+  </div>
+
+  <div id="scr-phone" class="hidden">
+    <p class="steps" id="phone-title"><b>Conectar celular</b></p>
+    <div class="card" style="max-width:420px;margin:0 auto">
+      <label class="f">Sistema do celular</label>
+      <select id="phone-os">
+        <option value="android">Android — app IP Webcam (porta 8080)</option>
+        <option value="iphone">iPhone — app DroidCam (porta 4747)</option>
+      </select>
+      <label class="f">IP mostrado no app</label>
+      <input id="phone-ip" placeholder="ex: 192.168.1.5">
+      <label class="f">Porta</label>
+      <input id="phone-port" placeholder="8080">
+      <div class="row" style="margin-top:14px">
+        <button class="btn" onclick="confirmPhone()">Conectar câmera</button>
+        <button class="btn ghost" onclick="backToCam()">← Voltar</button>
+      </div>
+      <p class="err hidden" id="phone-err"></p>
+      <p class="note">Abra o app no celular, inicie o servidor e digite o IP exibido (sem http://). A detecção de gesto no stream remoto pode não funcionar por restrição de segurança do navegador — nesse caso use os botões manuais abaixo do vídeo.</p>
+    </div>
+  </div>
+
+  <div id="scr-game" class="hidden">
+    <div class="topbar">
+      <span class="tag" style="position:static" id="mode-tag">—</span>
+      <button class="btn ghost" onclick="endGame()">Encerrar</button>
+    </div>
+    <div class="scoreboard">
+      <div><b id="sc-you">0</b><span id="sc-you-label">Você</span></div>
+      <div><b id="sc-draw">0</b><span>Empates</span></div>
+      <div><b id="sc-them">0</b><span id="sc-them-label">IA</span></div>
+    </div>
+    <div class="streams" id="streams"></div>
+    <p class="result" id="result-txt">Aperte ESPAÇO ou o botão para jogar</p>
+    <div class="row" style="justify-content:center;margin-bottom:6px">
+      <button class="btn" id="play-btn" onclick="confirmarJogada()">Confirmar jogada (Espaço)</button>
+    </div>
+    <div class="manual" id="manual-p1"></div>
+    <div id="manual-p2-wrap" class="hidden">
+      <p class="steps" style="margin:14px 0 4px">Jogador 2</p>
+      <div class="manual" id="manual-p2"></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+<script>
+const CAM_OPTIONS = {
+  ia:[
+    {id:'webcam',ic:'💻',t:'Webcam do PC',d:'Usa a câmera do computador.'},
+    {id:'phone1',ic:'📱',t:'Celular via Wi-Fi',d:'Uma câmera de celular como fonte.'}
+  ],
+  pvp:[
+    {id:'webcam',ic:'💻',t:'1 Câmera (Webcam do PC)',d:'Duas mãos na mesma câmera.'},
+    {id:'phone1',ic:'📱',t:'1 Câmera (Celular via Wi-Fi)',d:'Duas mãos no mesmo celular.'},
+    {id:'webcam+phone',ic:'💻📱',t:'2 Câmeras (Webcam + Celular)',d:'Um jogador em cada fonte.'},
+    {id:'phone+phone',ic:'📱📱',t:'2 Câmeras (Celular + Celular)',d:'Cada jogador com seu celular.'}
+  ]
+};
+let state={mode:null,camOpt:null,phoneQueue:[],phoneConfigs:[],streams:{},hands:{},
+  scores:{you:0,draw:0,them:0},lastGestureA:'Nenhum',lastGestureB:'Nenhum',history:[]};
+
+function chooseMode(m){
+  state.mode=m;
+  const wrap=document.getElementById('cam-options');
+  wrap.innerHTML='';
+  CAM_OPTIONS[m].forEach(o=>{
+    const el=document.createElement('div');
+    el.className='card';
+    el.onclick=()=>chooseCam(o.id);
+    el.innerHTML=`<span class="ic">${o.ic}</span><b>${o.t}</b><span class="d">${o.d}</span>`;
+    wrap.appendChild(el);
+  });
+  show('scr-cam');
+}
+function backToMode(){show('scr-mode')}
+function backToCam(){show('scr-cam')}
+
+function chooseCam(id){
+  state.camOpt=id;
+  state.phoneQueue=[];
+  if(id==='phone1') state.phoneQueue=['Celular (único)'];
+  if(id==='webcam+phone') state.phoneQueue=['Celular (auxiliar)'];
+  if(id==='phone+phone') state.phoneQueue=['Celular 1 (esquerda)','Celular 2 (direita)'];
+  state.phoneConfigs=[];
+  if(state.phoneQueue.length) nextPhoneSetup();
+  else startGame();
+}
+function nextPhoneSetup(){
+  const label=state.phoneQueue[0];
+  document.getElementById('phone-title').innerHTML=`<b>Conectar</b> — ${label}`;
+  document.getElementById('phone-err').classList.add('hidden');
+  document.getElementById('phone-ip').value='';
+  document.getElementById('phone-port').value='';
+  show('scr-phone');
+}
+function confirmPhone(){
+  const os=document.getElementById('phone-os').value;
+  const ip=document.getElementById('phone-ip').value.trim();
+  let port=document.getElementById('phone-port').value.trim();
+  if(!ip){showPhoneErr('Digite o IP mostrado no app.');return}
+  if(!port) port = os==='android'?'8080':'4747';
+  const url = os==='android' ? `http://${ip}:${port}/video` : `http://${ip}:${port}/mjpegfeed`;
+  state.phoneConfigs.push({url,label:state.phoneQueue[0]});
+  state.phoneQueue.shift();
+  if(state.phoneQueue.length) nextPhoneSetup();
+  else startGame();
+}
+function showPhoneErr(msg){
+  const e=document.getElementById('phone-err');
+  e.textContent=msg;e.classList.remove('hidden');
+}
+
+function show(id){
+  ['scr-mode','scr-cam','scr-phone','scr-game'].forEach(s=>document.getElementById(s).classList.toggle('hidden',s!==id));
+}
+
+function needsTwoHandsSameCam(){
+  return state.mode==='pvp' && (state.camOpt==='webcam'||state.camOpt==='phone1');
+}
+function camList(){
+  if(state.camOpt==='webcam') return ['webcam'];
+  if(state.camOpt==='phone1') return ['phone0'];
+  if(state.camOpt==='webcam+phone') return ['webcam','phone0'];
+  if(state.camOpt==='phone+phone') return ['phone0','phone1'];
+}
+
+async function startGame(){
+  state.scores={you:0,draw:0,them:0};
+  document.getElementById('sc-you').textContent='0';
+  document.getElementById('sc-draw').textContent='0';
+  document.getElementById('sc-them').textContent='0';
+  document.getElementById('sc-you-label').textContent = state.mode==='ia'?'Você':'Jogador 1';
+  document.getElementById('sc-them-label').textContent = state.mode==='ia'?'IA':'Jogador 2';
+  document.getElementById('mode-tag').textContent = state.mode==='ia'?'🤖 vs IA Preditiva':'🧑‍🤝‍🧑 PvP';
+  document.getElementById('manual-p2-wrap').classList.toggle('hidden', !(state.mode==='pvp'));
+  buildManualButtons('manual-p1');
+  buildManualButtons('manual-p2');
+
+  const cams=camList();
+  const streamsEl=document.getElementById('streams');
+  streamsEl.className='streams'+(cams.length>1?' two':'');
+  streamsEl.innerHTML='';
+  let phoneIdx=0;
+  for(const c of cams){
+    const box=document.createElement('div');
+    box.className='stream-box';
+    box.id='box-'+c;
+    box.innerHTML=`<span class="placeholder">Abrindo câmera…</span>`;
+    streamsEl.appendChild(box);
+  }
+  show('scr-game');
+  for(const c of cams){
+    if(c==='webcam') await openWebcam(c);
+    else { await openPhone(c, state.phoneConfigs[phoneIdx]); phoneIdx++; }
+  }
+  document.addEventListener('keydown',onSpace);
+}
+
+async function openWebcam(camId){
+  const box=document.getElementById('box-'+camId);
+  try{
+    const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user'}});
+    box.innerHTML=`<video id="v-${camId}" autoplay playsinline muted></video><canvas id="c-${camId}"></canvas><span class="tag">Webcam</span>`;
+    const v=document.getElementById('v-'+camId);
+    v.srcObject=stream; state.streams[camId]=stream;
+    v.style.transform='scaleX(-1)';
+    document.getElementById('c-'+camId).style.transform='scaleX(-1)';
+    await v.play().catch(()=>{});
+    setupHands(camId, v, needsTwoHandsSameCam() && camId==='webcam' ? 2 : 1);
+  }catch(err){
+    box.innerHTML=`<span class="placeholder">Não foi possível abrir a webcam.<br>${err.message}<br><br>Use os botões manuais abaixo.</span>`;
+  }
+}
+async function openPhone(camId,cfg){
+  const box=document.getElementById('box-'+camId);
+  box.innerHTML=`<img id="v-${camId}" crossorigin="anonymous"><span class="tag">${cfg?cfg.label:'Celular'}</span>`;
+  const img=document.getElementById('v-'+camId);
+  img.onerror=()=>{
+    box.innerHTML=`<span class="placeholder">Não conectou ao stream do celular.<br>Verifique o IP/porta e a rede Wi-Fi.<br><br>Use os botões manuais abaixo.</span>`;
+  };
+  img.src=cfg.url+'?t='+Date.now();
+  setupHands(camId, img, needsTwoHandsSameCam() && camId==='phone0' ? 2 : 1, true);
+}
+
+function setupHands(camId, srcEl, numHands, isImg){
+  try{
+    const hands=new Hands({locateFile:f=>`https://cdn.jsdelivr.net/npm/@mediapipe/hands/${f}`});
+    hands.setOptions({maxNumHands:numHands,modelComplexity:0,minDetectionConfidence:0.6,minTrackingConfidence:0.5});
+    hands.onResults(res=>onHandsResults(camId,res));
+    state.hands[camId]={hands,srcEl,busy:false};
+    const loop=async()=>{
+      const h=state.hands[camId];
+      if(h && h.srcEl && !h.busy){
+        h.busy=true;
+        try{ await h.hands.send({image:h.srcEl}); }catch(e){}
+        h.busy=false;
+      }
+      if(state.hands[camId]) requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(loop);
+  }catch(e){}
+}
+
+function classifyGesture(lm){
+  const ext = i => lm[i].y < lm[i-2].y - 0.02;
+  const fingers=[ext(8),ext(12),ext(16),ext(20)];
+  const n=fingers.filter(Boolean).length;
+  if(n===0) return 'Pedra';
+  if(n===2 && fingers[0] && fingers[1]) return 'Tesoura';
+  if(n>=4) return 'Papel';
+  return 'Indefinido';
+}
+function onHandsResults(camId,res){
+  const canvas=document.getElementById('c-'+camId);
+  if(canvas){
+    const ctx=canvas.getContext('2d');
+    canvas.width=res.image.width||300; canvas.height=res.image.height||300;
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    if(res.multiHandLandmarks){
+      ctx.fillStyle='#ff5fa2';
+      res.multiHandLandmarks.forEach(lm=>lm.forEach(p=>{
+        ctx.beginPath();ctx.arc(p.x*canvas.width,p.y*canvas.height,4,0,7);ctx.fill();
+      }));
+    }
+  }
+  if(!res.multiHandLandmarks || !res.multiHandLandmarks.length) return;
+  const hands=res.multiHandLandmarks.map(lm=>({x:lm[0].x,g:classifyGesture(lm)})).sort((a,b)=>a.x-b.x);
+  if(needsTwoHandsSameCam()){
+    state.lastGestureA = hands[0] ? hands[0].g : 'Nenhum';
+    state.lastGestureB = hands[1] ? hands[1].g : 'Nenhum';
+  }else{
+    const cams=camList();
+    const g = hands[0] ? hands[0].g : 'Nenhum';
+    if(cams[0]===camId) state.lastGestureA=g; else state.lastGestureB=g;
+  }
+  updateResultLine();
+}
+function updateResultLine(){
+  if(document.getElementById('result-txt').dataset.locked) return;
+  if(state.mode==='ia'){
+    document.getElementById('result-txt').textContent = 'Detectado: '+state.lastGestureA;
+  }else{
+    document.getElementById('result-txt').textContent = `J1: ${state.lastGestureA} · J2: ${state.lastGestureB}`;
+  }
+}
+
+function buildManualButtons(elId){
+  const el=document.getElementById(elId);
+  el.innerHTML='';
+  [['🪨','Pedra'],['📄','Papel'],['✂️','Tesoura']].forEach(([ic,g])=>{
+    const b=document.createElement('button');
+    b.className='btn ghost'; b.textContent=ic; b.title=g;
+    b.onclick=()=>{ if(elId==='manual-p1') state.lastGestureA=g; else state.lastGestureB=g; updateResultLine(); };
+    el.appendChild(b);
+  });
+}
+
+function onSpace(e){ if(e.code==='Space'){ e.preventDefault(); confirmarJogada(); } }
+
+function predizerIA(){
+  if(!state.history.length) return ['Pedra','Papel','Tesoura'][Math.floor(Math.random()*3)];
+  const freq={Pedra:0,Papel:0,Tesoura:0};
+  state.history.slice(-8).forEach(g=>{ if(freq[g]!==undefined) freq[g]++ });
+  const provavel=Object.keys(freq).sort((a,b)=>freq[b]-freq[a])[0];
+  const contra={Pedra:'Papel',Papel:'Tesoura',Tesoura:'Pedra'};
+  return contra[provavel];
+}
+function vencedor(a,b){
+  if(a===b) return 0;
+  if((a==='Pedra'&&b==='Tesoura')||(a==='Papel'&&b==='Pedra')||(a==='Tesoura'&&b==='Papel')) return 1;
+  return -1;
+}
+function confirmarJogada(){
+  const validas=['Pedra','Papel','Tesoura'];
+  const g1=state.lastGestureA, g2=state.lastGestureB;
+  const rTxt=document.getElementById('result-txt');
+  if(!validas.includes(g1) || (state.mode==='pvp' && !validas.includes(g2))){
+    rTxt.textContent='Faça uma jogada válida antes de confirmar!';
+    return;
+  }
+  let out;
+  if(state.mode==='ia'){
+    const jIA=predizerIA();
+    state.history.push(g1);
+    const v=vencedor(g1,jIA);
+    if(v===0){out='EMPATE! IA jogou '+jIA;state.scores.draw++;}
+    else if(v===1){out='VOCÊ VENCEU! IA jogou '+jIA;state.scores.you++;}
+    else{out='IA VENCEU! IA jogou '+jIA;state.scores.them++;}
+  }else{
+    const v=vencedor(g1,g2);
+    if(v===0){out='EMPATE!';state.scores.draw++;}
+    else if(v===1){out='JOGADOR 1 VENCEU!';state.scores.you++;}
+    else{out='JOGADOR 2 VENCEU!';state.scores.them++;}
+  }
+  document.getElementById('sc-you').textContent=state.scores.you;
+  document.getElementById('sc-draw').textContent=state.scores.draw;
+  document.getElementById('sc-them').textContent=state.scores.them;
+  rTxt.textContent=out; rTxt.dataset.locked='1';
+  setTimeout(()=>{ rTxt.dataset.locked=''; updateResultLine(); },1800);
+}
+
+function endGame(){
+  document.removeEventListener('keydown',onSpace);
+  Object.values(state.streams).forEach(s=>s.getTracks().forEach(t=>t.stop()));
+  state.streams={}; state.hands={};
+  state.lastGestureA='Nenhum'; state.lastGestureB='Nenhum'; state.history=[];
+  document.getElementById('result-txt').dataset.locked='';
+  show('scr-mode');
+}
+</script>
+</body>
+</html>
