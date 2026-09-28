@@ -1,5 +1,5 @@
 # ✊✋✌️ Jokenpô Vision - Motor de Visão Computacional e IA
-
+https://canva.link/i021g5oaxp35fif APRESENTAÇÃO NO CANVA
 Projeto desenvolvido para o processo seletivo/apresentação do **Programa de Educação Tutorial (PET) - Engenharia de Computação** da **Universidade Federal do Ceará (UFC)**.
 
 O **Jokenpô Vision** é um sistema interativo de Pedra, Papel e Tesoura que utiliza Visão Computacional em tempo real para detectar os gestos das mãos humanas. O projeto conta com um módulo de Inteligência Artificial preditiva baseada em **Cadeia de Markov Estocástica** e suporte para processamento paralelo (Multithreading) de múltiplas câmeras.
