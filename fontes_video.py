@@ -5,10 +5,7 @@ import threading
 import os
 import ssl
 
-# =================================================================
-# BYPASS DE SEGURANÇA SSL/HTTPS
-# Força o Python e o motor do OpenCV a aceitarem certificados autoassinados
-# =================================================================
+
 try:
     _create_unverified_https_context = ssl._create_unverified_context
 except AttributeError:
